@@ -3,9 +3,8 @@ import tempfile
 from functools import reduce
 from pymongo import MongoClient
 
-MONGODB_HOST = 'localhost'
-MONGODB_PORT = 27017
-client = MongoClient(MONGODB_HOST, MONGODB_PORT)
+MONGO_URI = os.environ['MONGO_URI']
+client = MongoClient(MONGO_URI)
 dbname = client['tutorial1']
 collection_name = dbname['student_db']
 
