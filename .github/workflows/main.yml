@@ -6,8 +6,11 @@ env:
 
 
 jobs:
-  build:
+  build-assignment1:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./assignment1
     steps:
     - uses: actions/checkout@v2
     - name: Build docker
