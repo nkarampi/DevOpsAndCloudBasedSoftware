@@ -1,41 +1,41 @@
 import os
 import tempfile
 from functools import reduce
+from pymongo import MongoClient
 
-from tinydb import TinyDB, Query
-
-db_dir_path = tempfile.gettempdir()
-db_file_path = os.path.join(db_dir_path, "students.json")
-student_db = TinyDB(db_file_path)
-
+MONGO_URI = os.environ['MONGO_URI']
+client = MongoClient(MONGO_URI)
+dbname = client['tutorial1']
+collection_name = dbname['student_db']
 
 def add(student=None):
-    queries = []
-    query = Query()
-    queries.append(query.first_name == student.first_name)
-    queries.append(query.last_name == student.last_name)
-    query = reduce(lambda a, b: a & b, queries)
-    res = student_db.search(query)
-    if res:
+    query = { 'first_name': student.first_name, 'last_name': student.last_name }
+    res = collection_name.find_one(query)
+    if res != None:
         return 'already exists', 409
 
-    doc_id = student_db.insert(student.to_dict())
-    student.student_id = doc_id
+    doc_id = collection_name.insert_one(student.to_dict())
     return student.student_id
 
 
 def get_by_id(student_id=None, subject=None):
-    student = student_db.get(doc_id=int(student_id))
+    student = collection_name.find_one({ 'student_id': student_id})
     if not student:
         return 'not found', 404
-    student['student_id'] = student_id
-    print(student)
-    return student
-
+    return parse_student(student)
 
 def delete(student_id=None):
-    student = student_db.get(doc_id=int(student_id))
+    student = collection_name.find({ 'student_id': student_id})
     if not student:
         return 'not found', 404
-    student_db.remove(doc_ids=[int(student_id)])
+    collection_name.delete_many({ 'student_id': student_id})
     return student_id
+
+def parse_student(student_doc):
+    student = {
+        'first_name': student_doc['first_name'],
+        'gradeRecords': student_doc['grade_records'],
+        'last_name': student_doc['last_name'],
+        'student_id': student_doc['student_id']
+    }
+    return student
