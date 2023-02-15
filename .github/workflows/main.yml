@@ -24,8 +24,8 @@ jobs:
       id: run-newman
       uses: anthonyvscode/newman-action@v1
       with:
-        collection: postman/collection.json
-        environment: postman/environment.json
+        collection: assignment1/postman/collection.json
+        environment: assignment1/postman/environment.json
         reporters: cli
         iterationCount: 3
 
